@@ -36,4 +36,24 @@ export const progressService = {
   updateProgress: (id, progress) => api.put(`/progress/${id}`, progress)
 }
 
+export const adminService = {
+  // Languages
+  getAllLanguages: () => api.get('/admin/languages'),
+  createLanguage: (language) => api.post('/admin/languages', language),
+  updateLanguage: (id, language) => api.put(`/admin/languages/${id}`, language),
+  deleteLanguage: (id) => api.delete(`/admin/languages/${id}`),
+  
+  // Lessons
+  getAllLessons: () => api.get('/admin/lessons'),
+  createLesson: (lesson) => api.post('/admin/lessons', lesson),
+  updateLesson: (id, lesson) => api.put(`/admin/lessons/${id}`, lesson),
+  deleteLesson: (id) => api.delete(`/admin/lessons/${id}`),
+  
+  // Questions
+  getAllQuestions: () => api.get('/admin/questions'),
+  createQuestion: (question) => api.post('/admin/questions', question),
+  updateQuestion: (id, question) => api.put(`/admin/questions/${id}`, question),
+  deleteQuestion: (id) => api.delete(`/admin/questions/${id}`)
+}
+
 export default api
