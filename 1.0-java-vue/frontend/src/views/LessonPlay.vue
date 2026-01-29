@@ -27,7 +27,7 @@
             v-if="currentQuestion.questionType === 'translate' || currentQuestion.questionType === 'fill_blank'"
             v-model="userAnswer"
             type="text"
-            placeholder="Type your answer..."
+            :placeholder="currentQuestion.phonetic ? `Type your answer... (${currentQuestion.phonetic})` : 'Type your answer...'"
             @keyup.enter="checkAnswer"
             class="answer-input"
           />
@@ -43,7 +43,10 @@
               class="option-btn"
               :class="{ selected: userAnswer === option }"
             >
-              {{ option }}
+              <div class="option-content">
+                <span class="option-text">{{ option }}</span>
+                <span v-if="optionPhonetics[index]" class="option-phonetic">{{ optionPhonetics[index] }}</span>
+              </div>
             </button>
           </div>
         </div>
@@ -59,7 +62,10 @@
         <div v-if="showResult" class="result-panel" :class="isCorrect ? 'correct' : 'incorrect'">
           <div class="result-content">
             <h3>{{ isCorrect ? '🎉 Correct!' : '❌ Incorrect' }}</h3>
-            <p v-if="!isCorrect">Correct answer: {{ currentQuestion.correctAnswer }}</p>
+            <p v-if="!isCorrect" class="correct-answer-display">
+              <span>Correct answer: {{ currentQuestion.correctAnswer }}</span>
+              <span v-if="currentQuestion.phonetic" class="phonetic-text">({{ currentQuestion.phonetic }})</span>
+            </p>
             <button @click="nextQuestion" class="primary">Continue</button>
           </div>
         </div>
@@ -105,6 +111,13 @@ const options = computed(() => {
   } catch {
     return []
   }
+})
+
+// Placeholder for option phonetics - could be extended to support phonetics in options JSON
+const optionPhonetics = computed(() => {
+  // For now, return empty array - options don't have phonetics yet
+  // Future enhancement: could parse options as array of objects like [{ text: "こんにちは", phonetic: "Konnichiwa" }]
+  return []
 })
 
 onMounted(async () => {
@@ -305,6 +318,35 @@ function goBack() {
   font-size: 18px;
   margin-bottom: 20px;
   color: var(--text-light);
+}
+
+.correct-answer-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.phonetic-text {
+  font-size: 16px;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.option-text {
+  font-size: 18px;
+}
+
+.option-phonetic {
+  font-size: 14px;
+  color: var(--text-light);
+  font-style: italic;
 }
 
 .completion {
