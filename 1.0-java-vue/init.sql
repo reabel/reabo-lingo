@@ -21,20 +21,20 @@ INSERT INTO lessons (language_id, title, description, level, order_index, xp_rew
 ON CONFLICT DO NOTHING;
 
 -- Sample Questions for Lesson 1 (Greetings)
-INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, options, order_index) VALUES
-(1, 'How do you say "Hello" in Spanish?', 'multiple_choice', 'Hola', '["Hola", "Adiós", "Gracias", "Por favor"]', 1),
-(1, 'Translate to Spanish: Goodbye', 'translate', 'Adiós', NULL, 2),
-(1, 'How do you say "Thank you"?', 'multiple_choice', 'Gracias', '["Gracias", "De nada", "Buenos días", "Buenas noches"]', 3),
-(1, 'What does "Buenos días" mean?', 'multiple_choice', 'Good morning', '["Good morning", "Good night", "Good afternoon", "Hello"]', 4),
-(1, 'Translate to Spanish: Please', 'translate', 'Por favor', NULL, 5)
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+(1, 'How do you say "Hello" in Spanish?', 'multiple_choice', 'Hola', NULL, '["Hola", "Adiós", "Gracias", "Por favor"]', 1),
+(1, 'Translate to Spanish: Goodbye', 'translate', 'Adiós', NULL, NULL, 2),
+(1, 'How do you say "Thank you"?', 'multiple_choice', 'Gracias', NULL, '["Gracias", "De nada", "Buenos días", "Buenas noches"]', 3),
+(1, 'What does "Buenos días" mean?', 'multiple_choice', 'Good morning', NULL, '["Good morning", "Good night", "Good afternoon", "Hello"]', 4),
+(1, 'Translate to Spanish: Please', 'translate', 'Por favor', NULL, NULL, 5)
 ON CONFLICT DO NOTHING;
 
 -- Sample Questions for Lesson 2 (Numbers)
-INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, options, order_index) VALUES
-(2, 'How do you say "1" in Spanish?', 'multiple_choice', 'Uno', '["Uno", "Dos", "Tres", "Cuatro"]', 1),
-(2, 'Translate: Five', 'translate', 'Cinco', NULL, 2),
-(2, 'What number is "Diez"?', 'multiple_choice', '10', '["5", "8", "10", "7"]', 3),
-(2, 'How do you say "3"?', 'translate', 'Tres', NULL, 4)
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+(2, 'How do you say "1" in Spanish?', 'multiple_choice', 'Uno', NULL, '["Uno", "Dos", "Tres", "Cuatro"]', 1),
+(2, 'Translate: Five', 'translate', 'Cinco', NULL, NULL, 2),
+(2, 'What number is "Diez"?', 'multiple_choice', '10', NULL, '["5", "8", "10", "7"]', 3),
+(2, 'How do you say "3"?', 'translate', 'Tres', NULL, NULL, 4)
 ON CONFLICT DO NOTHING;
 
 -- Lessons for French (language_id = 2)
@@ -92,25 +92,50 @@ INSERT INTO lessons (language_id, title, description, level, order_index, xp_rew
 ON CONFLICT DO NOTHING;
 
 -- Questions for French Lesson 6 (Salutations)
-INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, options, order_index) VALUES
-(6, 'How do you say "Hello" in French?', 'multiple_choice', 'Bonjour', '["Bonjour", "Au revoir", "Merci", "S''il vous plaît"]', 1),
-(6, 'Translate to French: Goodbye', 'translate', 'Au revoir', NULL, 2),
-(6, 'How do you say "Thank you"?', 'multiple_choice', 'Merci', '["Merci", "De rien", "Bonjour", "Bonsoir"]', 3),
-(6, 'What does "Bonsoir" mean?', 'multiple_choice', 'Good evening', '["Good morning", "Good night", "Good evening", "Hello"]', 4)
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+(6, 'How do you say "Hello" in French?', 'multiple_choice', 'Bonjour', NULL, '["Bonjour", "Au revoir", "Merci", "S''il vous plaît"]', 1),
+(6, 'Translate to French: Goodbye', 'translate', 'Au revoir', NULL, NULL, 2),
+(6, 'How do you say "Thank you"?', 'multiple_choice', 'Merci', NULL, '["Merci", "De rien", "Bonjour", "Bonsoir"]', 3),
+(6, 'What does "Bonsoir" mean?', 'multiple_choice', 'Good evening', NULL, '["Good morning", "Good night", "Good evening", "Hello"]', 4)
 ON CONFLICT DO NOTHING;
 
 -- Questions for Russian Lesson 26 (Приветствия)
-INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, options, order_index) VALUES
-(26, 'How do you say "Hello" in Russian?', 'multiple_choice', 'Здравствуйте', '["Здравствуйте", "До свидания", "Спасибо", "Пожалуйста"]', 1),
-(26, 'Translate to Russian: Goodbye', 'translate', 'До свидания', NULL, 2),
-(26, 'How do you say "Thank you"?', 'multiple_choice', 'Спасибо', '["Спасибо", "Пожалуйста", "Привет", "Пока"]', 3),
-(26, 'What does "Привет" mean?', 'multiple_choice', 'Hi/Hello', '["Goodbye", "Thank you", "Hi/Hello", "Please"]', 4)
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+(26, 'How do you say "Hello" in Russian?', 'multiple_choice', 'Здравствуйте', 'Zdravstvuyte', '["Здравствуйте", "До свидания", "Спасибо", "Пожалуйста"]', 1),
+(26, 'Translate to Russian: Goodbye', 'translate', 'До свидания', 'Do svidaniya', NULL, 2),
+(26, 'How do you say "Thank you"?', 'multiple_choice', 'Спасибо', 'Spasibo', '["Спасибо", "Пожалуйста", "Привет", "Пока"]', 3),
+(26, 'What does "Привет" mean?', 'multiple_choice', 'Hi/Hello', 'Privet', '["Goodbye", "Thank you", "Hi/Hello", "Please"]', 4)
 ON CONFLICT DO NOTHING;
 
 -- Questions for Dutch Lesson 31 (Begroetingen)
-INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, options, order_index) VALUES
-(31, 'How do you say "Hello" in Dutch?', 'multiple_choice', 'Hallo', '["Hallo", "Dag", "Dank je", "Alsjeblieft"]', 1),
-(31, 'Translate to Dutch: Goodbye', 'translate', 'Tot ziens', NULL, 2),
-(31, 'How do you say "Thank you"?', 'multiple_choice', 'Dank je', '["Dank je", "Alsjeblieft", "Goedemorgen", "Goedendag"]', 3),
-(31, 'What does "Goedendag" mean?', 'multiple_choice', 'Good day', '["Good morning", "Good night", "Good day", "Hello"]', 4)
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+(31, 'How do you say "Hello" in Dutch?', 'multiple_choice', 'Hallo', NULL, '["Hallo", "Dag", "Dank je", "Alsjeblieft"]', 1),
+(31, 'Translate to Dutch: Goodbye', 'translate', 'Tot ziens', NULL, NULL, 2),
+(31, 'How do you say "Thank you"?', 'multiple_choice', 'Dank je', NULL, '["Dank je", "Alsjeblieft", "Goedemorgen", "Goedendag"]', 3),
+(31, 'What does "Goedendag" mean?', 'multiple_choice', 'Good day', NULL, '["Good morning", "Good night", "Good day", "Hello"]', 4)
+ON CONFLICT DO NOTHING;
+
+-- Questions for Japanese Lesson 16 (あいさつ - Greetings)
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+(16, 'How do you say "Hello" in Japanese?', 'multiple_choice', 'こんにちは', 'Konnichiwa', '["こんにちは", "さようなら", "ありがとう", "おねがいします"]', 1),
+(16, 'Translate to Japanese: Thank you', 'translate', 'ありがとう', 'Arigatou', NULL, 2),
+(16, 'How do you say "Good morning"?', 'multiple_choice', 'おはよう', 'Ohayou', '["おはよう", "こんばんは", "さようなら", "こんにちは"]', 3),
+(16, 'What does "さようなら" mean?', 'multiple_choice', 'Goodbye', 'Sayounara', '["Hello", "Thank you", "Goodbye", "Please"]', 4),
+(16, 'Translate to Japanese: Please', 'translate', 'おねがいします', 'Onegaishimasu', NULL, 5)
+ON CONFLICT DO NOTHING;
+
+-- Questions for Japanese Lesson 17 (数字 - Numbers)
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+(17, 'How do you say "1" in Japanese?', 'multiple_choice', 'いち', 'Ichi', '["いち", "に", "さん", "よん"]', 1),
+(17, 'Translate: Five', 'translate', 'ご', 'Go', NULL, 2),
+(17, 'What number is "じゅう"?', 'multiple_choice', '10', 'Juu', '["5", "8", "10", "7"]', 3),
+(17, 'How do you say "3"?', 'translate', 'さん', 'San', NULL, 4)
+ON CONFLICT DO NOTHING;
+
+-- Additional Russian Questions for Lesson 27 (Числа - Numbers)
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+(27, 'How do you say "1" in Russian?', 'multiple_choice', 'один', 'Odin', '["один", "два", "три", "четыре"]', 1),
+(27, 'Translate: Five', 'translate', 'пять', 'Pyat', NULL, 2),
+(27, 'What number is "десять"?', 'multiple_choice', '10', 'Desyat', '["5", "8", "10", "7"]', 3),
+(27, 'How do you say "3"?', 'translate', 'три', 'Tri', NULL, 4)
 ON CONFLICT DO NOTHING;

@@ -4,11 +4,21 @@ A full-stack language learning application built with Java Spring Boot and Vue.j
 
 ## 🚀 Features
 
-- **Multiple Languages**: Learn Spanish, French, German, Japanese, and Italian
+- **Multiple Languages**: Learn Spanish, French, German, Japanese, Italian, Russian, and Dutch
+- **Phonetic Support**: Non-Latin scripts (Russian, Japanese) display with romanization for easy learning
 - **Interactive Lessons**: Engaging lessons with multiple question types
 - **Progress Tracking**: Track XP, streaks, and completed lessons
 - **Modern UI**: Clean, responsive design inspired by Duolingo
 - **RESTful API**: Well-structured backend with JPA/Hibernate
+
+## ✨ New: Phonetic Romanization
+
+For languages with non-Latin scripts (Russian Cyrillic, Japanese Hiragana/Katakana), the app now displays both native characters and phonetic equivalents:
+
+- **Russian**: Здравствуйте (Zdravstvuyte)
+- **Japanese**: ありがとう (Arigatou)
+
+See [PHONETIC_SUPPORT.md](PHONETIC_SUPPORT.md) for details and [SETUP_PHONETIC.md](SETUP_PHONETIC.md) for setup instructions.
 
 ## 🛠️ Tech Stack
 

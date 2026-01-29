@@ -30,6 +30,9 @@ public class Question {
     private String correctAnswer;
     
     @Column(columnDefinition = "TEXT")
+    private String phonetic; // Romanized/phonetic version for non-Latin scripts
+    
+    @Column(columnDefinition = "TEXT")
     private String options; // JSON array for multiple choice
     
     @Column(name = "audio_url")
