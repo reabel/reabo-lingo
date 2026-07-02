@@ -6,6 +6,7 @@
         <nav>
           <router-link to="/languages" class="nav-link">Languages</router-link>
           <router-link to="/profile" class="nav-link">Profile</router-link>
+          <router-link to="/admin" class="nav-link">Admin</router-link>
         </nav>
       </div>
     </header>
