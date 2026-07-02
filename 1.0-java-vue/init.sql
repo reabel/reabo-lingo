@@ -274,3 +274,37 @@ INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phoneti
 (40, 'What does "O tio" mean?', 'multiple_choice', 'Uncle', NULL, '["Aunt", "Cousin", "Uncle", "Nephew"]', 9),
 (40, 'How do you say "cousin"?', 'translate', 'O primo', NULL, NULL, 10)
 ON CONFLICT DO NOTHING;
+
+-- Expanded French Lessons (language_id = 2)
+INSERT INTO lessons (language_id, title, description, level, order_index, xp_reward, is_active) VALUES
+(2, 'Voyage & Café', 'Order food and navigate French travel moments', 2, 6, 20, true),
+(2, 'Verbes Quotidiens', 'Use practical everyday French action verbs', 2, 7, 20, true)
+ON CONFLICT DO NOTHING;
+
+-- Questions for French Lesson "Voyage & Café"
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'How do you ask: "Where is the train station?"', 'translate', 'Ou est la gare?', 'oo eh lah gahr', NULL, 1),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'Translate: I would like a coffee', 'translate', 'Je voudrais un cafe', 'zhuh voo-dreh uhn kah-fey', NULL, 2),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'What does "L''addition, s''il vous plait" mean?', 'multiple_choice', 'The bill, please', 'lah-dee-syon seel voo pleh', '["The menu, please", "The bill, please", "A table for two", "A coffee to go"]', 3),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'How do you say "ticket" in French?', 'multiple_choice', 'Le billet', 'luh bee-yeh', '["Le billet", "Le bagage", "Le passeport", "Le voyage"]', 4),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'Translate: A table for two, please', 'translate', 'Une table pour deux, s''il vous plait', 'ewn tah-bluh poor duh seel voo pleh', NULL, 5),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'What does "Le metro" mean?', 'multiple_choice', 'Subway', 'luh may-troh', '["Taxi", "Subway", "Airport", "Platform"]', 6),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'How do you ask: "Do you speak English?"', 'translate', 'Parlez-vous anglais?', 'par-lay voo ahn-glay', NULL, 7),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'Choose the French phrase for "I am lost"', 'multiple_choice', 'Je suis perdu', 'zhuh swee pair-doo', '["Je suis pret", "Je suis perdu", "Je suis fatigue", "Je suis content"]', 8),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'Translate: The menu, please', 'translate', 'Le menu, s''il vous plait', 'luh meh-new seel voo pleh', NULL, 9),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Voyage & Café' LIMIT 1), 'How do you say "airport" in French?', 'multiple_choice', 'L''aeroport', 'leh-roh-por', '["Le quai", "La gare", "L''aeroport", "Le pont"]', 10)
+ON CONFLICT DO NOTHING;
+
+-- Questions for French Lesson "Verbes Quotidiens"
+INSERT INTO questions (lesson_id, prompt, question_type, correct_answer, phonetic, options, order_index) VALUES
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'Translate: I eat', 'translate', 'Je mange', 'zhuh mahnzh', NULL, 1),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'How do you say "I drink"?', 'multiple_choice', 'Je bois', 'zhuh bwah', '["Je lis", "Je bois", "Je dors", "Je parle"]', 2),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'Translate: We speak', 'translate', 'Nous parlons', 'noo par-lohn', NULL, 3),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'What does "Elle travaille" mean?', 'multiple_choice', 'She works', 'ell trah-vai', '["She studies", "She works", "She walks", "She sings"]', 4),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'How do you say "They live"?', 'translate', 'Ils habitent', 'eel zah-beet', NULL, 5),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'Choose the French for "I study"', 'multiple_choice', 'J''etudie', 'zhay-tew-dee', '["J''etudie", "J''ecoute", "J''arrive", "J''attends"]', 6),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'Translate: You listen', 'translate', 'Tu ecoutes', 'tew ay-koot', NULL, 7),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'What does "Nous marchons" mean?', 'multiple_choice', 'We walk', 'noo mar-shohn', '["We run", "We walk", "We arrive", "We dance"]', 8),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'How do you say "I sleep"?', 'translate', 'Je dors', 'zhuh dor', NULL, 9),
+((SELECT id FROM lessons WHERE language_id = 2 AND title = 'Verbes Quotidiens' LIMIT 1), 'Choose the French for "You (formal) write"', 'multiple_choice', 'Vous ecrivez', 'voo zay-kree-vay', '["Vous ecrivez", "Vous chantez", "Vous voyez", "Vous courez"]', 10)
+ON CONFLICT DO NOTHING;

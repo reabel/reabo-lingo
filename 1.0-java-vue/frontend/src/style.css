@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -5,19 +7,19 @@
 }
 
 :root {
-  --primary-color: #58cc02;
-  --primary-hover: #4bb501;
+  --primary-color: #1c7ed6;
+  --primary-hover: #1864ab;
   --danger-color: #ff4b4b;
-  --text-dark: #3c3c3c;
-  --text-light: #777;
-  --bg-gray: #f7f7f7;
-  --border-gray: #e5e5e5;
+  --text-dark: #1f2d3d;
+  --text-light: #5c6f82;
+  --bg-gray: #f6f9fc;
+  --border-gray: #d8e2ec;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Nunito', 'Avenir Next', 'Segoe UI', sans-serif;
   color: var(--text-dark);
-  background: #fff;
+  background: #fdfdfd;
 }
 
 #app {
@@ -38,11 +40,12 @@ button {
 button.primary {
   background: var(--primary-color);
   color: white;
+  box-shadow: 0 8px 18px rgba(24, 100, 171, 0.25);
 }
 
 button.primary:hover {
   background: var(--primary-hover);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 button.secondary {
@@ -67,4 +70,12 @@ input {
 input:focus {
   outline: none;
   border-color: var(--primary-color);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  letter-spacing: 0.01em;
 }

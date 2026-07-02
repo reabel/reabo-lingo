@@ -4,8 +4,8 @@
       <div class="container">
         <button @click="goBack" class="exit-btn">✕</button>
         <div class="progress-bar">
-          <div 
-            class="progress-fill" 
+          <div
+            class="progress-fill"
             :style="{ width: progressPercent + '%' }"
           ></div>
         </div>
@@ -14,16 +14,25 @@
 
     <main class="container">
       <div v-if="loading" class="loading">Loading question...</div>
-      
+
       <div v-else-if="currentQuestion" class="question-container">
+        <div class="lesson-scene" :style="{ background: visualTheme.background }" aria-hidden="true">
+          <img :src="visualTheme.image" class="scene-art" alt="">
+          <p class="scene-text">{{ lessonTitle || 'Practice lesson' }}</p>
+        </div>
+
         <h2 class="question-prompt">{{ currentQuestion.prompt }}</h2>
-        
+
+        <p v-if="currentQuestion.phonetic" class="pronunciation-tip">
+          Pronunciation tip: {{ currentQuestion.phonetic }}
+        </p>
+
         <div v-if="currentQuestion.imageUrl" class="question-image">
           <img :src="currentQuestion.imageUrl" alt="Question visual">
         </div>
 
         <div class="answer-area">
-          <input 
+          <input
             v-if="currentQuestion.questionType === 'translate' || currentQuestion.questionType === 'fill_blank'"
             v-model="userAnswer"
             type="text"
@@ -32,7 +41,7 @@
             class="answer-input"
           />
 
-          <div 
+          <div
             v-if="currentQuestion.questionType === 'multiple_choice'"
             class="options-grid"
           >
@@ -51,8 +60,8 @@
           </div>
         </div>
 
-        <button 
-          @click="checkAnswer" 
+        <button
+          @click="checkAnswer"
           class="primary check-btn"
           :disabled="!userAnswer"
         >
@@ -62,6 +71,9 @@
         <div v-if="showResult" class="result-panel" :class="isCorrect ? 'correct' : 'incorrect'">
           <div class="result-content">
             <h3>{{ isCorrect ? '🎉 Correct!' : '❌ Incorrect' }}</h3>
+            <p v-if="isCorrect && acceptedVariant" class="accepted-variant-note">
+              Accepted variant: nice answer. Accents and punctuation are flexible in this mode.
+            </p>
             <p v-if="!isCorrect" class="correct-answer-display">
               <span>Correct answer: {{ currentQuestion.correctAnswer }}</span>
               <span v-if="currentQuestion.phonetic" class="phonetic-text">({{ currentQuestion.phonetic }})</span>
@@ -84,8 +96,16 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { questionService } from '../services/api'
+import { questionService, lessonService } from '../services/api'
 import { useUserStore } from '../stores/user'
+import greetingsArt from '../assets/illustrations/greetings.svg'
+import numbersArt from '../assets/illustrations/numbers.svg'
+import foodArt from '../assets/illustrations/food.svg'
+import colorsArt from '../assets/illustrations/colors.svg'
+import familyArt from '../assets/illustrations/family.svg'
+import travelArt from '../assets/illustrations/travel.svg'
+import verbsArt from '../assets/illustrations/verbs.svg'
+import practiceArt from '../assets/illustrations/practice.svg'
 
 const router = useRouter()
 const route = useRoute()
@@ -95,8 +115,10 @@ const currentIndex = ref(0)
 const userAnswer = ref('')
 const showResult = ref(false)
 const isCorrect = ref(false)
+const acceptedVariant = ref(false)
 const loading = ref(true)
 const sessionXp = ref(0)
+const lessonTitle = ref('')
 
 const currentQuestion = computed(() => questions.value[currentIndex.value])
 const progressPercent = computed(() => {
@@ -113,18 +135,47 @@ const options = computed(() => {
   }
 })
 
-// Placeholder for option phonetics - could be extended to support phonetics in options JSON
 const optionPhonetics = computed(() => {
-  // For now, return empty array - options don't have phonetics yet
-  // Future enhancement: could parse options as array of objects like [{ text: "こんにちは", phonetic: "Konnichiwa" }]
   return []
+})
+
+const visualTheme = computed(() => {
+  const source = normalizeForMatch(`${lessonTitle.value} ${currentQuestion.value?.prompt || ''}`)
+
+  if (source.includes('salut') || source.includes('hello') || source.includes('good')) {
+    return { image: greetingsArt, background: 'linear-gradient(135deg, #e3f5ff 0%, #fff8db 100%)' }
+  }
+  if (source.includes('nombre') || source.includes('number')) {
+    return { image: numbersArt, background: 'linear-gradient(135deg, #d3f9d8 0%, #e7f5ff 100%)' }
+  }
+  if (source.includes('nourriture') || source.includes('food') || source.includes('cafe') || source.includes('bread') || source.includes('coffee')) {
+    return { image: foodArt, background: 'linear-gradient(135deg, #ffe8cc 0%, #fff3bf 100%)' }
+  }
+  if (source.includes('couleur') || source.includes('color')) {
+    return { image: colorsArt, background: 'linear-gradient(135deg, #f3d9fa 0%, #ffd8e8 100%)' }
+  }
+  if (source.includes('famille') || source.includes('family')) {
+    return { image: familyArt, background: 'linear-gradient(135deg, #ffe3e3 0%, #f8f0fc 100%)' }
+  }
+  if (source.includes('voyage') || source.includes('train') || source.includes('airport') || source.includes('metro')) {
+    return { image: travelArt, background: 'linear-gradient(135deg, #d0ebff 0%, #e3fafc 100%)' }
+  }
+  if (source.includes('verbe') || source.includes('verb')) {
+    return { image: verbsArt, background: 'linear-gradient(135deg, #e9fac8 0%, #d3f9d8 100%)' }
+  }
+
+  return { image: practiceArt, background: 'linear-gradient(135deg, #e7f5ff 0%, #fff0f6 100%)' }
 })
 
 onMounted(async () => {
   const lessonId = route.params.lessonId
   try {
-    const response = await questionService.getQuestionsByLesson(lessonId)
-    questions.value = response.data
+    const [questionResponse, lessonResponse] = await Promise.all([
+      questionService.getQuestionsByLesson(lessonId),
+      lessonService.getLessonById(lessonId)
+    ])
+    questions.value = questionResponse.data
+    lessonTitle.value = lessonResponse.data?.title || ''
   } catch (error) {
     console.error('Error loading questions:', error)
   } finally {
@@ -138,11 +189,14 @@ function selectOption(option) {
 
 function checkAnswer() {
   if (!userAnswer.value) return
-  
-  isCorrect.value = userAnswer.value.toLowerCase().trim() === 
-                    currentQuestion.value.correctAnswer.toLowerCase().trim()
+
+  const normalizedUserAnswer = normalizeAnswer(userAnswer.value)
+  const normalizedCorrectAnswer = normalizeAnswer(currentQuestion.value.correctAnswer)
+  const strictMatch = userAnswer.value.toLowerCase().trim() === currentQuestion.value.correctAnswer.toLowerCase().trim()
+  isCorrect.value = normalizedUserAnswer === normalizedCorrectAnswer
+  acceptedVariant.value = isCorrect.value && !strictMatch
   showResult.value = true
-  
+
   if (isCorrect.value) {
     const xpEarned = 10
     sessionXp.value += xpEarned
@@ -155,8 +209,8 @@ function nextQuestion() {
     currentIndex.value++
     userAnswer.value = ''
     showResult.value = false
+    acceptedVariant.value = false
   } else {
-    // Lesson complete
     currentIndex.value = questions.value.length
     const lessonId = route.params.lessonId
     userStore.completeLesson(parseInt(lessonId))
@@ -166,12 +220,32 @@ function nextQuestion() {
 function goBack() {
   router.go(-1)
 }
+
+function normalizeForMatch(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+function normalizeAnswer(text) {
+  return normalizeForMatch(text)
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae')
+    .replace(/[’']/g, ' ')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
 </script>
 
 <style scoped>
 .lesson-play {
   min-height: 100vh;
-  background: white;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(255, 183, 77, 0.16), transparent 28%),
+    radial-gradient(circle at 88% 16%, rgba(66, 165, 245, 0.14), transparent 30%),
+    white;
 }
 
 .header {
@@ -224,13 +298,51 @@ function goBack() {
 .question-container {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 20px;
+}
+
+.lesson-scene {
+  border: 2px solid var(--border-gray);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.scene-art {
+  width: 118px;
+  height: 74px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(76, 108, 143, 0.2);
+}
+
+.scene-text {
+  justify-self: end;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #375a7f;
 }
 
 .question-prompt {
   font-size: 32px;
   text-align: center;
   color: var(--text-dark);
+}
+
+.pronunciation-tip {
+  text-align: center;
+  color: #285f96;
+  font-weight: 700;
+  background: #e7f5ff;
+  border: 1px solid #a5d8ff;
+  border-radius: 12px;
+  padding: 10px 14px;
 }
 
 .question-image {
@@ -320,6 +432,14 @@ function goBack() {
   color: var(--text-light);
 }
 
+.accepted-variant-note {
+  color: #0b7285;
+  background: #e3fafc;
+  border: 1px solid #99e9f2;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
 .correct-answer-display {
   display: flex;
   flex-direction: column;
@@ -370,5 +490,20 @@ function goBack() {
   font-weight: 600;
   color: var(--primary-color);
   margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .question-prompt {
+    font-size: 24px;
+  }
+
+  .lesson-scene {
+    grid-template-columns: auto;
+  }
+
+  .scene-text {
+    justify-self: start;
+    grid-column: auto;
+  }
 }
 </style>
