@@ -66,12 +66,21 @@ This will:
 - Create the `reabolingo` database
 - Load sample data (languages, lessons, questions)
 
+> Alternatively if you're using a native DB Client you can use the `createdb` command and then load the sql file manually.
+
+To run the init script: (default user used here)
+`psql -d reabolingo -a -f init.sql`
+
+> Oddly enough, it appears the data won't be able to be initialized until you start the backend (the mvn script will create the tables)
+
 ### 3. Start the Backend
 
 ```bash
 cd backend
 ./mvnw spring-boot:run
 ```
+
+> alternatively: mvn spring-boot:run
 
 The backend will be available at `http://localhost:8080`
 
