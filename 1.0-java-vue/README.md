@@ -66,12 +66,16 @@ This will:
 - Create the `reabolingo` database
 - Load sample data (languages, lessons, questions)
 
-> Alternatively if you're using a native DB Client you can use the `createdb` command and then load the sql file manually.
+To run the init script without a local `psql` client, run it from inside the PostgreSQL container:
 
-To run the init script: (default user used here)
-`psql -d reabolingo -a -f init.sql`
+```bash
+docker-compose exec -T postgres psql -U postgres -d reabolingo -a -f /docker-entrypoint-initdb.d/init.sql
+```
 
-> Oddly enough, it appears the data won't be able to be initialized until you start the backend (the mvn script will create the tables)
+> `init.sql` is mounted to `/docker-entrypoint-initdb.d/init.sql` by `docker-compose.yml`.
+> If the database volume already exists, the auto-init on container startup is skipped; use the command above to apply/reapply the script manually.
+
+> If your backend creates tables first, start backend once and then run the command above.
 
 ### 3. Start the Backend
 
