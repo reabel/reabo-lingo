@@ -42,4 +42,40 @@ public class UserProgress {
     
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    public Long getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Lesson getLesson() {
+        return lesson;
+    }
+
+    public Boolean getIsCompleted() {
+        return isCompleted;
+    }
+
+    public Integer getAttempts() {
+        return attempts;
+    }
+
+    public Integer getBestScore() {
+        return bestScore;
+    }
+
+    public Integer getXpEarned() {
+        return xpEarned;
+    }
+
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
 }

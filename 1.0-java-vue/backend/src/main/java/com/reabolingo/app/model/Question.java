@@ -43,4 +43,44 @@ public class Question {
     
     @Column(name = "order_index", nullable = false)
     private Integer orderIndex;
+
+    public Long getId() {
+        return id;
+    }
+
+    public Lesson getLesson() {
+        return lesson;
+    }
+
+    public String getPrompt() {
+        return prompt;
+    }
+
+    public String getQuestionType() {
+        return questionType;
+    }
+
+    public String getCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    public String getPhonetic() {
+        return phonetic;
+    }
+
+    public String getOptions() {
+        return options;
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public Integer getOrderIndex() {
+        return orderIndex;
+    }
 }

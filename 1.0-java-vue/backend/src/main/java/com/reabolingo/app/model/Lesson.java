@@ -36,4 +36,36 @@ public class Lesson {
     
     @Column(name = "is_active")
     private Boolean isActive = true;
+
+    public Long getId() {
+        return id;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public Integer getOrderIndex() {
+        return orderIndex;
+    }
+
+    public Integer getXpReward() {
+        return xpReward;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
 }

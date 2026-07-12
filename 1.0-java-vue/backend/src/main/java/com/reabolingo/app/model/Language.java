@@ -29,4 +29,28 @@ public class Language {
     
     @Column(name = "is_active")
     private Boolean isActive = true;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getFlagEmoji() {
+        return flagEmoji;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
 }

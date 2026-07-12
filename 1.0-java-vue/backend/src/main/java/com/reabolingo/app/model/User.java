@@ -40,4 +40,40 @@ public class User {
     
     @Column(name = "last_active")
     private LocalDateTime lastActive = LocalDateTime.now();
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public Integer getCurrentStreak() {
+        return currentStreak;
+    }
+
+    public Integer getTotalXp() {
+        return totalXp;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getLastActive() {
+        return lastActive;
+    }
 }

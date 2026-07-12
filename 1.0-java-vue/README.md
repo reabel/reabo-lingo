@@ -77,10 +77,14 @@ To run the init script: (default user used here)
 
 ```bash
 cd backend
-./mvnw spring-boot:run
+mvn spring-boot:run
 ```
 
-> alternatively: mvn spring-boot:run
+> This repository currently does not include the Maven Wrapper files (`mvnw`, `.mvn/wrapper/*`).
+> If you see `bash: ./mvnw: No such file or directory`, run `mvn spring-boot:run` instead.
+
+> Optional: generate wrapper files if you prefer `./mvnw`
+> `mvn -N wrapper:wrapper`
 
 The backend will be available at `http://localhost:8080`
 
@@ -206,6 +210,20 @@ docker-compose logs -f
 # Restart database
 docker-compose restart
 ```
+
+If you see:
+`permission denied while trying to connect to the docker API at unix:///var/run/docker.sock`
+
+run:
+
+```bash
+sudo groupadd -f docker
+sudo usermod -aG docker "$USER"
+sudo systemctl enable --now docker.socket
+newgrp docker
+```
+
+Then retry `docker-compose up -d`.
 
 ## 📝 Sample Data
 
