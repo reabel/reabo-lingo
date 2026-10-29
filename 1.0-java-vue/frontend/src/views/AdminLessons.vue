@@ -234,7 +234,7 @@ function closeForm() {
 @import './AdminStyles.css';
 
 .lessons-table {
-  background: white;
+  background: var(--surface-color);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

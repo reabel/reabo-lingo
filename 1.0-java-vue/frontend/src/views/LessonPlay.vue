@@ -32,14 +32,47 @@
         </div>
 
         <div class="answer-area">
-          <input
-            v-if="currentQuestion.questionType === 'translate' || currentQuestion.questionType === 'fill_blank'"
-            v-model="userAnswer"
-            type="text"
-            :placeholder="currentQuestion.phonetic ? `Type your answer... (${currentQuestion.phonetic})` : 'Type your answer...'"
-            @keyup.enter="checkAnswer"
-            class="answer-input"
-          />
+          <div v-if="isOpenEndedQuestion" class="answer-entry-row">
+            <input
+              v-model="userAnswer"
+              type="text"
+              :placeholder="currentQuestion.phonetic ? `Type your answer... (${currentQuestion.phonetic})` : 'Type your answer...'"
+              @keyup.enter="checkAnswer"
+              class="answer-input"
+              :disabled="showResult"
+              :aria-describedby="showResult ? 'answer-feedback' : undefined"
+              :aria-invalid="showResult && !isCorrect && !passed"
+            />
+            <div class="answer-actions">
+              <template v-if="!showResult">
+                <button @click="checkAnswer" class="primary" :disabled="!userAnswer">Check</button>
+                <button @click="passQuestion" class="secondary">Pass</button>
+              </template>
+              <button v-else @click="nextQuestion" class="primary">Continue</button>
+            </div>
+          </div>
+
+          <div
+            v-if="isOpenEndedQuestion && showResult"
+            id="answer-feedback"
+            class="answer-feedback"
+            :class="isCorrect ? 'correct' : 'incorrect'"
+            :role="isCorrect ? 'status' : 'alert'"
+            aria-live="polite"
+          >
+            <p v-if="isCorrect" class="feedback-heading">🎉 Correct!</p>
+            <p v-if="acceptedTypo" class="accepted-variant-note">
+              Close enough, but check the spelling: {{ currentQuestion.correctAnswer }}
+            </p>
+            <p v-else-if="isCorrect && acceptedVariant" class="accepted-variant-note">
+              Accepted variant: accents and punctuation don't affect this answer.
+            </p>
+            <p v-else-if="!isCorrect" class="feedback-error">
+              {{ passed ? 'Question passed.' : 'Not quite.' }}
+              Correct answer: {{ currentQuestion.correctAnswer }}
+              <span v-if="currentQuestion.phonetic" class="phonetic-text">({{ currentQuestion.phonetic }})</span>
+            </p>
+          </div>
 
           <div
             v-if="currentQuestion.questionType === 'multiple_choice'"
@@ -61,6 +94,7 @@
         </div>
 
         <button
+          v-if="!isOpenEndedQuestion"
           @click="checkAnswer"
           class="primary check-btn"
           :disabled="!userAnswer"
@@ -68,11 +102,16 @@
           Check
         </button>
 
-        <div v-if="showResult" class="result-panel" :class="isCorrect ? 'correct' : 'incorrect'">
+        <div v-if="showResult && !isOpenEndedQuestion" class="result-panel" :class="isCorrect ? 'correct' : 'incorrect'">
           <div class="result-content">
             <h3>{{ isCorrect ? '🎉 Correct!' : '❌ Incorrect' }}</h3>
             <p v-if="isCorrect && acceptedVariant" class="accepted-variant-note">
-              Accepted variant: nice answer. Accents and punctuation are flexible in this mode.
+              <template v-if="acceptedTypo">
+                Close enough, but check the spelling: {{ currentQuestion.correctAnswer }}
+              </template>
+              <template v-else>
+                Accepted variant: accents and punctuation don't affect this answer.
+              </template>
             </p>
             <p v-if="!isCorrect" class="correct-answer-display">
               <span>Correct answer: {{ currentQuestion.correctAnswer }}</span>
@@ -116,11 +155,16 @@ const userAnswer = ref('')
 const showResult = ref(false)
 const isCorrect = ref(false)
 const acceptedVariant = ref(false)
+const acceptedTypo = ref(false)
+const passed = ref(false)
 const loading = ref(true)
 const sessionXp = ref(0)
 const lessonTitle = ref('')
 
 const currentQuestion = computed(() => questions.value[currentIndex.value])
+const isOpenEndedQuestion = computed(() =>
+  ['translate', 'fill_blank'].includes(currentQuestion.value?.questionType)
+)
 const progressPercent = computed(() => {
   if (questions.value.length === 0) return 0
   return (currentIndex.value / questions.value.length) * 100
@@ -188,14 +232,17 @@ function selectOption(option) {
 }
 
 function checkAnswer() {
-  if (!userAnswer.value) return
+  if (!userAnswer.value || showResult.value) return
 
   const normalizedUserAnswer = normalizeAnswer(userAnswer.value)
   const normalizedCorrectAnswer = normalizeAnswer(currentQuestion.value.correctAnswer)
   const strictMatch = userAnswer.value.toLowerCase().trim() === currentQuestion.value.correctAnswer.toLowerCase().trim()
-  isCorrect.value = normalizedUserAnswer === normalizedCorrectAnswer
+  const normalizedMatch = normalizedUserAnswer === normalizedCorrectAnswer
+  acceptedTypo.value = isOpenEndedQuestion.value && !normalizedMatch && isCloseAnswer(normalizedUserAnswer, normalizedCorrectAnswer)
+  isCorrect.value = normalizedMatch || acceptedTypo.value
   acceptedVariant.value = isCorrect.value && !strictMatch
   showResult.value = true
+  passed.value = false
 
   if (isCorrect.value) {
     const xpEarned = 10
@@ -204,12 +251,23 @@ function checkAnswer() {
   }
 }
 
+function passQuestion() {
+  if (!isOpenEndedQuestion.value || showResult.value) return
+  isCorrect.value = false
+  acceptedVariant.value = false
+  acceptedTypo.value = false
+  passed.value = true
+  showResult.value = true
+}
+
 function nextQuestion() {
   if (currentIndex.value < questions.value.length - 1) {
     currentIndex.value++
     userAnswer.value = ''
     showResult.value = false
     acceptedVariant.value = false
+    acceptedTypo.value = false
+    passed.value = false
   } else {
     currentIndex.value = questions.value.length
     const lessonId = route.params.lessonId
@@ -237,6 +295,46 @@ function normalizeAnswer(text) {
     .replace(/\s+/g, ' ')
     .trim()
 }
+
+function isCloseAnswer(userAnswer, correctAnswer) {
+  if (Math.min(userAnswer.length, correctAnswer.length) < 5) return false
+  if (Math.abs(userAnswer.length - correctAnswer.length) > 1) return false
+  if (userAnswer === correctAnswer) return false
+
+  if (userAnswer.length === correctAnswer.length) {
+    const differences = []
+    for (let index = 0; index < userAnswer.length; index++) {
+      if (userAnswer[index] !== correctAnswer[index]) differences.push(index)
+      if (differences.length > 2) return false
+    }
+
+    if (differences.length === 1) return true
+    return differences.length === 2
+      && differences[1] === differences[0] + 1
+      && userAnswer[differences[0]] === correctAnswer[differences[1]]
+      && userAnswer[differences[1]] === correctAnswer[differences[0]]
+  }
+
+  const shorter = userAnswer.length < correctAnswer.length ? userAnswer : correctAnswer
+  const longer = userAnswer.length < correctAnswer.length ? correctAnswer : userAnswer
+  let shorterIndex = 0
+  let longerIndex = 0
+  let skippedCharacter = false
+
+  while (shorterIndex < shorter.length && longerIndex < longer.length) {
+    if (shorter[shorterIndex] === longer[longerIndex]) {
+      shorterIndex++
+      longerIndex++
+    } else if (skippedCharacter) {
+      return false
+    } else {
+      skippedCharacter = true
+      longerIndex++
+    }
+  }
+
+  return true
+}
 </script>
 
 <style scoped>
@@ -245,7 +343,7 @@ function normalizeAnswer(text) {
   background:
     radial-gradient(circle at 12% 10%, rgba(255, 183, 77, 0.16), transparent 28%),
     radial-gradient(circle at 88% 16%, rgba(66, 165, 245, 0.14), transparent 30%),
-    white;
+    var(--bg-gray);
 }
 
 .header {
@@ -260,7 +358,8 @@ function normalizeAnswer(text) {
 }
 
 .exit-btn {
-  background: white;
+  background: var(--surface-color);
+  color: var(--text-dark);
   border: 2px solid var(--border-gray);
   width: 40px;
   height: 40px;
@@ -322,11 +421,11 @@ function normalizeAnswer(text) {
 .scene-text {
   justify-self: end;
   padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--surface-color);
   border-radius: 999px;
   font-size: 13px;
   font-weight: 700;
-  color: #375a7f;
+  color: var(--text-dark);
 }
 
 .question-prompt {
@@ -355,11 +454,51 @@ function normalizeAnswer(text) {
 }
 
 .answer-area {
-  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.answer-entry-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: stretch;
 }
 
 .answer-input {
   font-size: 20px;
+}
+
+.answer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.answer-actions button {
+  white-space: nowrap;
+}
+
+.answer-feedback {
+  border: 1px solid var(--border-gray);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.answer-feedback.correct {
+  background: rgba(88, 204, 2, 0.1);
+}
+
+.answer-feedback.incorrect {
+  background: rgba(255, 75, 75, 0.1);
+}
+
+.feedback-heading {
+  font-weight: 800;
+}
+
+.feedback-error {
+  color: var(--text-dark);
 }
 
 .options-grid {
@@ -369,7 +508,8 @@ function normalizeAnswer(text) {
 }
 
 .option-btn {
-  background: white;
+  background: var(--surface-color);
+  color: var(--text-dark);
   border: 2px solid var(--border-gray);
   padding: 20px;
   font-size: 18px;
@@ -398,11 +538,12 @@ function normalizeAnswer(text) {
 
 .result-panel {
   position: fixed;
+  z-index: 1000;
   bottom: 0;
   left: 0;
   right: 0;
   padding: 32px;
-  background: white;
+  background: var(--surface-color);
   border-top: 4px solid;
 }
 
@@ -495,6 +636,14 @@ function normalizeAnswer(text) {
 @media (max-width: 768px) {
   .question-prompt {
     font-size: 24px;
+  }
+
+  .answer-entry-row {
+    grid-template-columns: 1fr;
+  }
+
+  .answer-actions button {
+    flex: 1;
   }
 
   .lesson-scene {

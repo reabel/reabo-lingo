@@ -54,7 +54,7 @@
 }
 
 .header {
-  background: white;
+  background: var(--surface-color);
   border-bottom: 2px solid var(--border-gray);
   padding: 16px 0;
 }
@@ -95,7 +95,7 @@ nav {
 .hero {
   text-align: center;
   padding: 80px 24px;
-  background: linear-gradient(180deg, #f7f7f7 0%, white 100%);
+  background: linear-gradient(180deg, var(--surface-color) 0%, var(--bg-gray) 100%);
 }
 
 .hero-title {

@@ -59,7 +59,7 @@ const completedLessonsCount = computed(() => userStore.completedLessons.length)
 }
 
 .header {
-  background: white;
+  background: var(--surface-color);
   border-bottom: 2px solid var(--border-gray);
   padding: 16px 0;
 }
@@ -78,7 +78,7 @@ const completedLessonsCount = computed(() => userStore.completedLessons.length)
 }
 
 .profile-card {
-  background: white;
+  background: var(--surface-color);
   border-radius: 16px;
   padding: 48px;
   text-align: center;

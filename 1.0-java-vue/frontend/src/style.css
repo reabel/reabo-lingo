@@ -7,19 +7,33 @@
 }
 
 :root {
+  color-scheme: dark;
+  --primary-color: #4dabf7;
+  --primary-hover: #339af0;
+  --danger-color: #ff6b6b;
+  --text-dark: #e6edf3;
+  --text-light: #aab8c5;
+  --bg-gray: #111821;
+  --surface-color: #1c2733;
+  --border-gray: #344454;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
   --primary-color: #1c7ed6;
   --primary-hover: #1864ab;
   --danger-color: #ff4b4b;
   --text-dark: #1f2d3d;
   --text-light: #5c6f82;
   --bg-gray: #f6f9fc;
+  --surface-color: #ffffff;
   --border-gray: #d8e2ec;
 }
 
 body {
   font-family: 'Nunito', 'Avenir Next', 'Segoe UI', sans-serif;
   color: var(--text-dark);
-  background: #fdfdfd;
+  background: var(--bg-gray);
 }
 
 #app {
@@ -49,7 +63,7 @@ button.primary:hover {
 }
 
 button.secondary {
-  background: white;
+  background: var(--surface-color);
   color: var(--text-dark);
   border: 2px solid var(--border-gray);
 }
@@ -63,6 +77,8 @@ input {
   padding: 14px;
   border: 2px solid var(--border-gray);
   border-radius: 12px;
+  background: var(--surface-color);
+  color: var(--text-dark);
   font-size: 16px;
   font-family: inherit;
 }
