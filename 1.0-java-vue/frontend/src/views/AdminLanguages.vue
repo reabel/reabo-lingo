@@ -185,7 +185,7 @@ function closeForm() {
 }
 
 .language-card {
-  background: white;
+  background: var(--surface-color);
   border: 2px solid var(--border-gray);
   border-radius: 16px;
   padding: 24px;

@@ -188,7 +188,7 @@ function normalizeForMatch(text) {
 }
 
 .header {
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--surface-color);
   border-bottom: 2px solid var(--border-gray);
   padding: 16px 0;
   backdrop-filter: blur(8px);
@@ -231,7 +231,7 @@ function normalizeForMatch(text) {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: white;
+  background: var(--surface-color);
   border: 2px solid var(--border-gray);
   border-radius: 20px;
   padding: 20px;
@@ -240,7 +240,7 @@ function normalizeForMatch(text) {
 }
 
 .hero-kicker {
-  color: #2b8a3e;
+  color: #69db7c;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -312,7 +312,7 @@ function normalizeForMatch(text) {
 }
 
 .lesson-info {
-  background: white;
+  background: var(--surface-color);
   padding: 20px;
   border-radius: 16px;
   border: 2px solid var(--border-gray);
@@ -342,12 +342,12 @@ function normalizeForMatch(text) {
 
 .scene-caption {
   justify-self: end;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--surface-color);
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 12px;
   font-weight: 700;
-  color: #4c6c8f;
+  color: var(--text-light);
 }
 
 .lesson-info h3 {

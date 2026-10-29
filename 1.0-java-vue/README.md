@@ -74,6 +74,7 @@ docker-compose exec -T postgres psql -U postgres -d reabolingo -a -f /docker-ent
 
 > `init.sql` is mounted to `/docker-entrypoint-initdb.d/init.sql` by `docker-compose.yml`.
 > If the database volume already exists, the auto-init on container startup is skipped; use the command above to apply/reapply the script manually.
+> Seed inserts skip languages, lessons, and questions that already exist. Reapplying the script will not remove duplicates already present in the database.
 
 > If your backend creates tables first, start backend once and then run the command above.
 

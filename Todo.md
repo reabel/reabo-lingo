@@ -1,0 +1,2 @@
+- [x] Add toggle for dark/light mode
+- [x] Add a closeness check for open-ended questions (e.g. accept "Au revior" for "Au revoir" with a spelling warning).

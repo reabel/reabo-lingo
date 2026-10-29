@@ -72,7 +72,12 @@
           <div class="result-content">
             <h3>{{ isCorrect ? '🎉 Correct!' : '❌ Incorrect' }}</h3>
             <p v-if="isCorrect && acceptedVariant" class="accepted-variant-note">
-              Accepted variant: nice answer. Accents and punctuation are flexible in this mode.
+              <template v-if="acceptedTypo">
+                Close enough, but check the spelling: {{ currentQuestion.correctAnswer }}
+              </template>
+              <template v-else>
+                Accepted variant: accents and punctuation don't affect this answer.
+              </template>
             </p>
             <p v-if="!isCorrect" class="correct-answer-display">
               <span>Correct answer: {{ currentQuestion.correctAnswer }}</span>
@@ -116,6 +121,7 @@ const userAnswer = ref('')
 const showResult = ref(false)
 const isCorrect = ref(false)
 const acceptedVariant = ref(false)
+const acceptedTypo = ref(false)
 const loading = ref(true)
 const sessionXp = ref(0)
 const lessonTitle = ref('')
@@ -193,7 +199,10 @@ function checkAnswer() {
   const normalizedUserAnswer = normalizeAnswer(userAnswer.value)
   const normalizedCorrectAnswer = normalizeAnswer(currentQuestion.value.correctAnswer)
   const strictMatch = userAnswer.value.toLowerCase().trim() === currentQuestion.value.correctAnswer.toLowerCase().trim()
-  isCorrect.value = normalizedUserAnswer === normalizedCorrectAnswer
+  const normalizedMatch = normalizedUserAnswer === normalizedCorrectAnswer
+  const isOpenEnded = ['translate', 'fill_blank'].includes(currentQuestion.value.questionType)
+  acceptedTypo.value = isOpenEnded && !normalizedMatch && isCloseAnswer(normalizedUserAnswer, normalizedCorrectAnswer)
+  isCorrect.value = normalizedMatch || acceptedTypo.value
   acceptedVariant.value = isCorrect.value && !strictMatch
   showResult.value = true
 
@@ -210,6 +219,7 @@ function nextQuestion() {
     userAnswer.value = ''
     showResult.value = false
     acceptedVariant.value = false
+    acceptedTypo.value = false
   } else {
     currentIndex.value = questions.value.length
     const lessonId = route.params.lessonId
@@ -237,6 +247,46 @@ function normalizeAnswer(text) {
     .replace(/\s+/g, ' ')
     .trim()
 }
+
+function isCloseAnswer(userAnswer, correctAnswer) {
+  if (Math.min(userAnswer.length, correctAnswer.length) < 5) return false
+  if (Math.abs(userAnswer.length - correctAnswer.length) > 1) return false
+  if (userAnswer === correctAnswer) return false
+
+  if (userAnswer.length === correctAnswer.length) {
+    const differences = []
+    for (let index = 0; index < userAnswer.length; index++) {
+      if (userAnswer[index] !== correctAnswer[index]) differences.push(index)
+      if (differences.length > 2) return false
+    }
+
+    if (differences.length === 1) return true
+    return differences.length === 2
+      && differences[1] === differences[0] + 1
+      && userAnswer[differences[0]] === correctAnswer[differences[1]]
+      && userAnswer[differences[1]] === correctAnswer[differences[0]]
+  }
+
+  const shorter = userAnswer.length < correctAnswer.length ? userAnswer : correctAnswer
+  const longer = userAnswer.length < correctAnswer.length ? correctAnswer : userAnswer
+  let shorterIndex = 0
+  let longerIndex = 0
+  let skippedCharacter = false
+
+  while (shorterIndex < shorter.length && longerIndex < longer.length) {
+    if (shorter[shorterIndex] === longer[longerIndex]) {
+      shorterIndex++
+      longerIndex++
+    } else if (skippedCharacter) {
+      return false
+    } else {
+      skippedCharacter = true
+      longerIndex++
+    }
+  }
+
+  return true
+}
 </script>
 
 <style scoped>
@@ -245,7 +295,7 @@ function normalizeAnswer(text) {
   background:
     radial-gradient(circle at 12% 10%, rgba(255, 183, 77, 0.16), transparent 28%),
     radial-gradient(circle at 88% 16%, rgba(66, 165, 245, 0.14), transparent 30%),
-    white;
+    var(--bg-gray);
 }
 
 .header {
@@ -260,7 +310,8 @@ function normalizeAnswer(text) {
 }
 
 .exit-btn {
-  background: white;
+  background: var(--surface-color);
+  color: var(--text-dark);
   border: 2px solid var(--border-gray);
   width: 40px;
   height: 40px;
@@ -322,11 +373,11 @@ function normalizeAnswer(text) {
 .scene-text {
   justify-self: end;
   padding: 6px 10px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--surface-color);
   border-radius: 999px;
   font-size: 13px;
   font-weight: 700;
-  color: #375a7f;
+  color: var(--text-dark);
 }
 
 .question-prompt {
@@ -369,7 +420,8 @@ function normalizeAnswer(text) {
 }
 
 .option-btn {
-  background: white;
+  background: var(--surface-color);
+  color: var(--text-dark);
   border: 2px solid var(--border-gray);
   padding: 20px;
   font-size: 18px;
@@ -398,11 +450,12 @@ function normalizeAnswer(text) {
 
 .result-panel {
   position: fixed;
+  z-index: 1000;
   bottom: 0;
   left: 0;
   right: 0;
   padding: 32px;
-  background: white;
+  background: var(--surface-color);
   border-top: 4px solid;
 }
 

@@ -273,7 +273,7 @@ function closeForm() {
 }
 
 .question-card {
-  background: white;
+  background: var(--surface-color);
   border: 2px solid var(--border-gray);
   border-radius: 12px;
   padding: 20px;

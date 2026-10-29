@@ -90,7 +90,7 @@ function getLanguageIllustration(code) {
 }
 
 .header {
-  background: white;
+  background: var(--surface-color);
   border-bottom: 2px solid var(--border-gray);
   padding: 16px 0;
 }
@@ -113,7 +113,7 @@ function getLanguageIllustration(code) {
   justify-content: space-between;
   gap: 20px;
   align-items: center;
-  background: white;
+  background: var(--surface-color);
   border: 2px solid var(--border-gray);
   border-radius: 20px;
   padding: 22px;
@@ -150,7 +150,7 @@ function getLanguageIllustration(code) {
 }
 
 .language-card {
-  background: white;
+  background: var(--surface-color);
   border: 2px solid var(--border-gray);
   border-radius: 16px;
   padding: 32px;

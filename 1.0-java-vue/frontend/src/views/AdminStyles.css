@@ -47,7 +47,7 @@
 }
 
 .admin-section {
-  background: white;
+  background: var(--surface-color);
   border-radius: 16px;
   padding: 32px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -87,7 +87,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: var(--surface-color);
   border-radius: 16px;
   padding: 32px;
   max-width: 600px;
@@ -123,6 +123,8 @@
   padding: 12px;
   border: 2px solid var(--border-gray);
   border-radius: 8px;
+  background: var(--surface-color);
+  color: var(--text-dark);
   font-size: 16px;
   font-family: inherit;
 }
