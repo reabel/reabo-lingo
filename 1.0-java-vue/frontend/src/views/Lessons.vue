@@ -24,6 +24,29 @@
         </div>
       </section>
 
+      <section v-if="language?.code === 'fr'" class="language-resources" aria-labelledby="language-resources-title">
+        <div>
+          <h2 id="language-resources-title">Official French tests in Canada</h2>
+          <p>Check the requirements for your program before choosing a test; accepted exams can vary.</p>
+        </div>
+        <div class="resource-links">
+          <a
+            href="https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/express-entry/documents/language-test.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Government of Canada: approved tests for Express Entry
+          </a>
+          <a
+            href="https://www.quebec.ca/immigration/permanente/travailleurs-qualifies/programme-selection-travailleurs-qualifies/exigences/connaissance-francais"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Government of Québec: accepted French tests and documents
+          </a>
+        </div>
+      </section>
+
       <div v-if="loading" class="loading">Loading lessons...</div>
 
       <div v-else class="lesson-path">
@@ -239,6 +262,40 @@ function normalizeForMatch(text) {
   box-shadow: 0 12px 28px rgba(13, 38, 76, 0.07);
 }
 
+.language-resources {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding: 20px;
+  background: var(--surface-color);
+  border: 2px solid var(--border-gray);
+  border-radius: 16px;
+}
+
+.language-resources h2 {
+  margin-bottom: 4px;
+  font-size: 22px;
+}
+
+.language-resources p {
+  color: var(--text-light);
+  line-height: 1.5;
+}
+
+.resource-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.resource-links a {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
 .hero-kicker {
   color: #69db7c;
   font-weight: 700;
@@ -372,6 +429,11 @@ function normalizeForMatch(text) {
 }
 
 @media (max-width: 768px) {
+  .language-resources {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .page-hero {
     flex-direction: column;
     align-items: flex-start;

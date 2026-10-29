@@ -32,14 +32,47 @@
         </div>
 
         <div class="answer-area">
-          <input
-            v-if="currentQuestion.questionType === 'translate' || currentQuestion.questionType === 'fill_blank'"
-            v-model="userAnswer"
-            type="text"
-            :placeholder="currentQuestion.phonetic ? `Type your answer... (${currentQuestion.phonetic})` : 'Type your answer...'"
-            @keyup.enter="checkAnswer"
-            class="answer-input"
-          />
+          <div v-if="isOpenEndedQuestion" class="answer-entry-row">
+            <input
+              v-model="userAnswer"
+              type="text"
+              :placeholder="currentQuestion.phonetic ? `Type your answer... (${currentQuestion.phonetic})` : 'Type your answer...'"
+              @keyup.enter="checkAnswer"
+              class="answer-input"
+              :disabled="showResult"
+              :aria-describedby="showResult ? 'answer-feedback' : undefined"
+              :aria-invalid="showResult && !isCorrect && !passed"
+            />
+            <div class="answer-actions">
+              <template v-if="!showResult">
+                <button @click="checkAnswer" class="primary" :disabled="!userAnswer">Check</button>
+                <button @click="passQuestion" class="secondary">Pass</button>
+              </template>
+              <button v-else @click="nextQuestion" class="primary">Continue</button>
+            </div>
+          </div>
+
+          <div
+            v-if="isOpenEndedQuestion && showResult"
+            id="answer-feedback"
+            class="answer-feedback"
+            :class="isCorrect ? 'correct' : 'incorrect'"
+            :role="isCorrect ? 'status' : 'alert'"
+            aria-live="polite"
+          >
+            <p v-if="isCorrect" class="feedback-heading">🎉 Correct!</p>
+            <p v-if="acceptedTypo" class="accepted-variant-note">
+              Close enough, but check the spelling: {{ currentQuestion.correctAnswer }}
+            </p>
+            <p v-else-if="isCorrect && acceptedVariant" class="accepted-variant-note">
+              Accepted variant: accents and punctuation don't affect this answer.
+            </p>
+            <p v-else-if="!isCorrect" class="feedback-error">
+              {{ passed ? 'Question passed.' : 'Not quite.' }}
+              Correct answer: {{ currentQuestion.correctAnswer }}
+              <span v-if="currentQuestion.phonetic" class="phonetic-text">({{ currentQuestion.phonetic }})</span>
+            </p>
+          </div>
 
           <div
             v-if="currentQuestion.questionType === 'multiple_choice'"
@@ -61,6 +94,7 @@
         </div>
 
         <button
+          v-if="!isOpenEndedQuestion"
           @click="checkAnswer"
           class="primary check-btn"
           :disabled="!userAnswer"
@@ -68,7 +102,7 @@
           Check
         </button>
 
-        <div v-if="showResult" class="result-panel" :class="isCorrect ? 'correct' : 'incorrect'">
+        <div v-if="showResult && !isOpenEndedQuestion" class="result-panel" :class="isCorrect ? 'correct' : 'incorrect'">
           <div class="result-content">
             <h3>{{ isCorrect ? '🎉 Correct!' : '❌ Incorrect' }}</h3>
             <p v-if="isCorrect && acceptedVariant" class="accepted-variant-note">
@@ -122,11 +156,15 @@ const showResult = ref(false)
 const isCorrect = ref(false)
 const acceptedVariant = ref(false)
 const acceptedTypo = ref(false)
+const passed = ref(false)
 const loading = ref(true)
 const sessionXp = ref(0)
 const lessonTitle = ref('')
 
 const currentQuestion = computed(() => questions.value[currentIndex.value])
+const isOpenEndedQuestion = computed(() =>
+  ['translate', 'fill_blank'].includes(currentQuestion.value?.questionType)
+)
 const progressPercent = computed(() => {
   if (questions.value.length === 0) return 0
   return (currentIndex.value / questions.value.length) * 100
@@ -194,23 +232,32 @@ function selectOption(option) {
 }
 
 function checkAnswer() {
-  if (!userAnswer.value) return
+  if (!userAnswer.value || showResult.value) return
 
   const normalizedUserAnswer = normalizeAnswer(userAnswer.value)
   const normalizedCorrectAnswer = normalizeAnswer(currentQuestion.value.correctAnswer)
   const strictMatch = userAnswer.value.toLowerCase().trim() === currentQuestion.value.correctAnswer.toLowerCase().trim()
   const normalizedMatch = normalizedUserAnswer === normalizedCorrectAnswer
-  const isOpenEnded = ['translate', 'fill_blank'].includes(currentQuestion.value.questionType)
-  acceptedTypo.value = isOpenEnded && !normalizedMatch && isCloseAnswer(normalizedUserAnswer, normalizedCorrectAnswer)
+  acceptedTypo.value = isOpenEndedQuestion.value && !normalizedMatch && isCloseAnswer(normalizedUserAnswer, normalizedCorrectAnswer)
   isCorrect.value = normalizedMatch || acceptedTypo.value
   acceptedVariant.value = isCorrect.value && !strictMatch
   showResult.value = true
+  passed.value = false
 
   if (isCorrect.value) {
     const xpEarned = 10
     sessionXp.value += xpEarned
     userStore.addXp(xpEarned)
   }
+}
+
+function passQuestion() {
+  if (!isOpenEndedQuestion.value || showResult.value) return
+  isCorrect.value = false
+  acceptedVariant.value = false
+  acceptedTypo.value = false
+  passed.value = true
+  showResult.value = true
 }
 
 function nextQuestion() {
@@ -220,6 +267,7 @@ function nextQuestion() {
     showResult.value = false
     acceptedVariant.value = false
     acceptedTypo.value = false
+    passed.value = false
   } else {
     currentIndex.value = questions.value.length
     const lessonId = route.params.lessonId
@@ -406,11 +454,51 @@ function isCloseAnswer(userAnswer, correctAnswer) {
 }
 
 .answer-area {
-  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.answer-entry-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: stretch;
 }
 
 .answer-input {
   font-size: 20px;
+}
+
+.answer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.answer-actions button {
+  white-space: nowrap;
+}
+
+.answer-feedback {
+  border: 1px solid var(--border-gray);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.answer-feedback.correct {
+  background: rgba(88, 204, 2, 0.1);
+}
+
+.answer-feedback.incorrect {
+  background: rgba(255, 75, 75, 0.1);
+}
+
+.feedback-heading {
+  font-weight: 800;
+}
+
+.feedback-error {
+  color: var(--text-dark);
 }
 
 .options-grid {
@@ -548,6 +636,14 @@ function isCloseAnswer(userAnswer, correctAnswer) {
 @media (max-width: 768px) {
   .question-prompt {
     font-size: 24px;
+  }
+
+  .answer-entry-row {
+    grid-template-columns: 1fr;
+  }
+
+  .answer-actions button {
+    flex: 1;
   }
 
   .lesson-scene {
